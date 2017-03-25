@@ -23,11 +23,14 @@ void loop() {
  }else if(mode > 521 && mode < 750)
  {
    flow();
- }else if(mode > 751 && mode < 1024)
+ }else if(mode > 751 && mode < 980)
  {
    microDink();
+ }else if(mode > 981 && mode < 1024)
+ {
+   verassing();
  }
-
+  
 }
 
 void standaard()
@@ -70,11 +73,19 @@ void hardSycle()
 void microDink()
 {
   i=analogRead(0);
-  i=i/2;
+  i=i;
   analogWrite(9,255-i);
   analogWrite(5,255-i);
   analogWrite(6,255-i);
   delay(10);
+}
+void verassing()
+{
+  analogWrite(9,random(0, 255));
+  analogWrite(5,random(0, 255));
+  analogWrite(6,random(0, 255));
+  delay(analogRead(0));
+
 }
 
 void flow()
