@@ -1,6 +1,14 @@
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h> 
+
+LiquidCrystal_I2C lcd(0x27,16,2);
+
 int analogPin = 0;
 int i;
 int mode;
+
+int red, green, blue = 0;
+int colorselect = 1;
 
 int GREEN = 9;
 int BLUE = 5;
@@ -8,26 +16,45 @@ int RED = 6;
 int delayTime = 2;
 void setup() {
   Serial.begin(9600); 
+  lcd.init();                      // initialize the lcd 
+  lcd.init();
+  lcd.backlight();
+  lcd.clear();
 
 }
 
 void loop() {
  mode = analogRead(1);
- Serial.println(mode);
+ 
  if(mode < 250)
- {
-   standaard();
+ { 
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print("Own color");
+   individual();
  }else if(mode > 251 && mode < 520)
  {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print("Hardscycle");
    hardSycle();
  }else if(mode > 521 && mode < 750)
  {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print("flow");
    flow();
  }else if(mode > 751 && mode < 980)
  {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print("sound (loud)");
    microDink();
  }else if(mode > 981 && mode < 1024)
  {
+   lcd.clear();
+   lcd.setCursor(0,0);
+   lcd.print("sound (random)");
    verassing();
  }
   
@@ -56,18 +83,20 @@ void standaard()
 
 void hardSycle()
 {
+  lcd.setCursor(0,1);
+  lcd.print(analogRead(2));
   analogWrite(9,255);
   analogWrite(5,255);
   analogWrite(6,0);
-  delay(500);
+  delay(analogRead(2));
   analogWrite(9,255);
   analogWrite(5,0);
   analogWrite(6,255);
-  delay(500);
+  delay(analogRead(2));
   analogWrite(9,0);
   analogWrite(5,255);
   analogWrite(6,255);
-  delay(500);
+  delay(analogRead(2));
 }
 
 void microDink()
@@ -88,6 +117,44 @@ void verassing()
 
 }
 
+void individual()
+{
+  
+  if(digitalRead(4))
+      colorselect++;
+  
+  if(colorselect == 1){
+      red = analogRead(2)/4;
+      lcd.setCursor(0,1);
+      lcd.print("G:       ");
+      lcd.setCursor(4,1);
+      lcd.print(red);
+  }
+  if(colorselect == 2){
+      green = analogRead(2)/4;
+      lcd.setCursor(0,1);
+      lcd.print("R:       ");
+      lcd.setCursor(4,1);
+      lcd.print(green);
+  }
+  if(colorselect == 3){
+      blue = analogRead(2)/4;
+      lcd.setCursor(0,1);
+      lcd.print("B:        ");
+      lcd.setCursor(4,1);
+      lcd.print(blue);
+  }
+  if(colorselect == 4){
+      colorselect = 0;
+      lcd.setCursor(0,1);
+      lcd.print("            ");    
+  }
+  delay(150);   
+  analogWrite(9,255-red);
+  analogWrite(5,255-green);
+  analogWrite(6,255-blue);
+}
+
 void flow()
 {
    int redVal = 255;
@@ -99,7 +166,7 @@ void flow()
     analogWrite( GREEN, 255 - greenVal );
     analogWrite( RED, 255 - redVal );
 
-    delay( delayTime );
+    delay( analogRead(2)/4 );
   }
  
   redVal = 0;
@@ -111,7 +178,7 @@ void flow()
     analogWrite( BLUE, 255 - blueVal );
     analogWrite( GREEN, 255 - greenVal );
 
-    delay( delayTime );
+    delay( analogRead(2)/4 );
   }
  
   redVal = 0;
@@ -123,7 +190,7 @@ void flow()
     analogWrite( RED, 255 - redVal );
     analogWrite( BLUE, 255 - blueVal );
 
-    delay( delayTime );
+    delay( analogRead(2)/4 );
   }
 
 }
